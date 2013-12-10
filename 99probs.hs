@@ -10,3 +10,7 @@ myButLast :: [a]->a
 myButLast [] = error "not big enough"
 myButLast [a,b] = a
 myButLast a = myButLast (tail a)
+
+-- q3 Find the kth element of a list, first element is 1
+elementAt :: [a]->Int->a
+elementAt xs i = xs !! (i-1)
