@@ -47,10 +47,23 @@ compress (x:xs) = cmp xs ([]:x) x
                 | y==id         = cmp ys accum id
                 | otherwise     = cmp ys ((head x):accum) x
 -- above solution not correct, try another
-compress' :: [a] -> [a]
-compress' (x:ys@(y:_))
-        | x == y    = compress ys
-        | otherwise = x : compress ys
-compress' ys = ys
+--compress' :: [a] -> [a]
+--compress' (x:ys@(y:_))
+--        | x == y    = compress ys
+--        | otherwise = x : compress ys
+--compress' ys = ys
 -- Ok well that was copy-pasting the answer and it still
 -- won't work... So I'm stumped
+
+-- q9 pack consecutive elements into separate lists
+pack :: (Eq a) => [a] -> [[a]]
+pack [] = []
+pack (x:xs) = (x:takeWhile(==x) xs):pack(dropWhile(==x) xs)
+-- I want to try another solution
+pack' :: (Eq a) => [a] ->[[a]]
+pack' [] = []
+pack' [x] = [[x]]
+pack' (x:xs) = if x `elem` (head(pack xs))
+		then (x:(head (pack xs))):(tail (pack xs))
+		else [x]:(pack xs)
+
