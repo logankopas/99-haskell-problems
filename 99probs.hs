@@ -2,13 +2,6 @@
 -- http://www.haskell.org/haskellwiki/H-99:_Ninety-Nine_Haskell_Problems
 -- q2 Find all but 2nd last element in a list
 
-module List1
-( flatten
-, encode
-, pack
-, encode
-) where
-
 myButLast :: [a]->a
 --myButLast a:b:xs
 --        | [] = []
@@ -81,3 +74,13 @@ encode a = fnct x
 		fnct [[]] = []
 		fnct (y:ys) =(length y, head y):(fnct ys)
 		fnct [] = []
+
+-- q11 modified run length encoding
+data RLencode = Multiple Int Char | Single Char deriving Show
+encodeModified :: [Char] -> [RLencode]
+encodeModified a = fnct q
+            where q = encode a
+                  fnct [] = []
+                  fnct (x@(i, a):xs) = if i==1
+                            then (Single a):fnct xs
+                            else (Multiple i a):fnct xs
