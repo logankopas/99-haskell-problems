@@ -2,6 +2,13 @@
 -- http://www.haskell.org/haskellwiki/H-99:_Ninety-Nine_Haskell_Problems
 -- q2 Find all but 2nd last element in a list
 
+module List1
+( flatten
+, encode
+, pack
+, encode
+) where
+
 myButLast :: [a]->a
 --myButLast a:b:xs
 --        | [] = []
