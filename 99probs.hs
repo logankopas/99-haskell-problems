@@ -68,7 +68,7 @@ pack' (x:xs) = if x `elem` (head(pack xs))
 		else [x]:(pack xs)
 
 -- q10 encode list into run length encoding
-encode :: [Char] -> [(Int,Char)]
+encode :: (Eq a) => [a] -> [(Int,a)]
 encode a = fnct x 
 	  where x = pack a
 		fnct [[]] = []
@@ -76,8 +76,8 @@ encode a = fnct x
 		fnct [] = []
 
 -- q11 modified run length encoding
-data RLencode = Multiple Int Char | Single Char deriving Show
-encodeModified :: [Char] -> [RLencode]
+data RLencode a = Multiple Int a | Single a deriving Show
+encodeModified :: (Eq a) => [a] -> [RLencode a]
 encodeModified a = fnct q
             where q = encode a
                   fnct [] = []
@@ -85,10 +85,33 @@ encodeModified a = fnct q
                             then (Single a):fnct xs
                             else (Multiple i a):fnct xs
 -- q12 decode run length from above
-decodeModified :: [RLencode] -> [Char]
+decodeModified :: [RLencode a] -> [a]
 decodeModified [] = []
 decodeModified ((Single c):cs) = c:decodeModified cs
 decodeModified ((Multiple i c):cs) = (extend i c)++decodeModified cs
                             where   extend 0 c = []
                                     extend 1 c = [c]
                                     extend num c = c:extend (num-1) c 
+
+-- q13 create run-length encoding without using sublists
+-- I think this is what I did in q11
+encodeDirect :: (Eq a) => [a] -> [RLencode a]
+encodeDirect [] = []
+encodeDirect (x:xs) = helper 1 x xs
+        where   helper i n [] = [element i n]
+                helper i n ns = if n == (head ns) 
+                                then helper (i+1) n (tail ns)
+                                else element i n:(helper 1 (head ns) (tail ns))
+                element 1 p = Single p
+                element z p = Multiple z p
+
+-- q14 Duplicate the elements of a list
+dupli :: [a] -> [a]
+dupli [] = []
+dupli (x:xs) = x:x:(dupli xs)
+-- I was originally trying to do list comprehension-style
+dupli' x = concat [[a,a] | a <- x]
+
+-- q15 replicate the elements of a list x times
+repli :: [a] -> Int -> [a]
+repli list x = concatMap (replicate x) list
