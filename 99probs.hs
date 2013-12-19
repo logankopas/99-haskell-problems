@@ -84,3 +84,11 @@ encodeModified a = fnct q
                   fnct (x@(i, a):xs) = if i==1
                             then (Single a):fnct xs
                             else (Multiple i a):fnct xs
+-- q12 decode run length from above
+decodeModified :: [RLencode] -> [Char]
+decodeModified [] = []
+decodeModified ((Single c):cs) = c:decodeModified cs
+decodeModified ((Multiple i c):cs) = (extend i c)++decodeModified cs
+                            where   extend 0 c = []
+                                    extend 1 c = [c]
+                                    extend num c = c:extend (num-1) c 
