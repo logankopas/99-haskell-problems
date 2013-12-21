@@ -46,7 +46,6 @@ compress (x:xs) = cmp xs ([]:x) x
                 | null xs       = accum
                 | y==id         = cmp ys accum id
                 | otherwise     = cmp ys ((head x):accum) x
--- above solution not correct, try another
 --compress' :: [a] -> [a]
 --compress' (x:ys@(y:_))
 --        | x == y    = compress ys
@@ -115,3 +114,12 @@ dupli' x = concat [[a,a] | a <- x]
 -- q15 replicate the elements of a list x times
 repli :: [a] -> Int -> [a]
 repli list x = concatMap (replicate x) list
+
+-- q16 drop every Nth element
+dropEvery :: [a] -> Int -> [a]
+dropEvery [] _ = []
+dropEvery list num = helper list num num []
+        where   helper [] _ orig accum = reverse accum
+                helper (x:xs) 1 orig accum = helper xs orig orig accum
+                helper (x:xs) i orig accum = helper xs (i-1) orig (x:accum)
+ 
