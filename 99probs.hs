@@ -123,3 +123,10 @@ dropEvery list num = helper list num num []
                 helper (x:xs) 1 orig accum = helper xs orig orig accum
                 helper (x:xs) i orig accum = helper xs (i-1) orig (x:accum)
  
+-- q17 split a list into 2 parts, not using predefined predicates
+split :: [a] -> Int -> ([a],[a])
+split [] _ = ([],[])
+split list num = helper list num []
+            where   helper (x:xs) 1 accum = (reverse(x:accum), xs)
+                    helper (x:xs) i accum = helper xs (i-1) (x:accum)
+                    helper [] _ accum = ([],accum)
