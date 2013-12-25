@@ -156,3 +156,8 @@ insertAt x xs i = left ++ (x: right)
         where left = fst z
               right = snd z
               z = split xs $ i-1  
+
+-- q22 create a list with all elements 
+range :: Int -> Int -> [Int]
+range a b | a<=b = [a..b]
+          | otherwise = reverse $ range b a
