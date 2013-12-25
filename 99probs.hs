@@ -149,3 +149,10 @@ removeAt x a = (a !! (x-1), resid x a [])
             where   resid 1 (y:ys) accum= (reverse accum)++ys
                     resid _ [] accum = accum
                     resid i (y:ys) accum= resid (i-1) ys (y:accum)
+
+-- q21 insert an element into the given position
+insertAt :: a -> [a] -> Int -> [a]
+insertAt x xs i = left ++ (x: right)
+        where left = fst z
+              right = snd z
+              z = split xs $ i-1  
