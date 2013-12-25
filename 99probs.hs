@@ -130,3 +130,8 @@ split list num = helper list num []
             where   helper (x:xs) 1 accum = (reverse(x:accum), xs)
                     helper (x:xs) i accum = helper xs (i-1) (x:accum)
                     helper [] _ accum = ([],accum)
+
+-- q18 extract a slice from a list (inclusive)
+-- list indices start at 1
+slice :: [a] -> Int -> Int -> [a]
+slice a x y = take (y-x+1) $ drop (x-1) a
