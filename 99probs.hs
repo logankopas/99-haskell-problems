@@ -142,3 +142,10 @@ rotate a x
         |x == 0 = a
         |x > 0  = (drop x a) ++ (take x a)
         |x < 0  = rotate a ((length a) + x)
+
+-- q20 remove the N'th element from a list 
+removeAt :: Int -> [a] -> (a,[a])
+removeAt x a = (a !! (x-1), resid x a [])
+            where   resid 1 (y:ys) accum= (reverse accum)++ys
+                    resid _ [] accum = accum
+                    resid i (y:ys) accum= resid (i-1) ys (y:accum)
