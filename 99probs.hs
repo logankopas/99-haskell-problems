@@ -135,3 +135,10 @@ split list num = helper list num []
 -- list indices start at 1
 slice :: [a] -> Int -> Int -> [a]
 slice a x y = take (y-x+1) $ drop (x-1) a
+
+--q19 rotate a list N places to the left
+rotate :: [a] -> Int -> [a]
+rotate a x
+        |x == 0 = a
+        |x > 0  = (drop x a) ++ (take x a)
+        |x < 0  = rotate a ((length a) + x)
