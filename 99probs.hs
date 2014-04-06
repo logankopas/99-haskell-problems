@@ -2,6 +2,8 @@
 -- http://www.haskell.org/haskellwiki/H-99:_Ninety-Nine_Haskell_Problems
 -- q2 Find all but 2nd last element in a list
 
+import System.Random
+
 myButLast :: [a]->a
 --myButLast a:b:xs
 --        | [] = []
@@ -155,9 +157,108 @@ insertAt :: a -> [a] -> Int -> [a]
 insertAt x xs i = left ++ (x: right)
         where left = fst z
               right = snd z
-              z = split xs $ i-1  
+              z = Main.split xs $ i-1  
 
 -- q22 create a list with all elements 
 range :: Int -> Int -> [Int]
 range a b | a<=b = [a..b]
           | otherwise = reverse $ range b a
+
+-- q23 extract a given number of random elements from a list
+rndSelect :: [a] -> Int -> IO [a]
+rndSelect a i = do
+    g <- newStdGen
+    return $ map (a!!) (take i (getRand a g))
+    where getRand a g = (randomRs (0,((length a)-1)) g)
+
+-- q24 draw n different lotto numbers from the set 1..m
+diffSelect :: Int -> Int -> IO [Int]
+diffSelect n m = rndSelect [1..m] n
+
+-- q25 create a random permutation of a list
+rndPermu :: [a] -> IO [a]
+rndPermu lst = do
+    g <- newStdGen
+    return $ perm' (lst,[]) (randoms g)
+    where   perm' ([],a) _ = a
+            perm' (x:[],a) _ = (x:a)
+            perm' (x,b) (r:rnd) = let tuple = rmn (r `mod` (length x)) x 
+                in perm' (fst tuple,(snd tuple):b) rnd
+rmn n xs = (ys ++ (tail zs),head zs)
+    where (ys,zs) = splitAt n xs          
+               
+-- q26 generate all K combinations of a list (C(N,K))
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _ = []
+combinations _ [] = []
+-- combinations' curlevel initiallist curcomb accum
+-- **NOTE** ordering is funny, but the number of combinations is correct 
+combinations n lst = if n > length lst
+                    then []
+                    else
+                        combinations' n lst [] []
+combinations' 1 [] curcomb accum = map reverse accum
+combinations' 1 lst curcomb accum = combinations' 1 (tail lst) curcomb 
+        (accum ++ [((head lst):curcomb)])
+combinations' n lst curcomb accum 
+    | length lst < n = accum 
+    | otherwise    =
+        (combinations' n (drop 1 lst) curcomb accum) ++
+        (combinations' (n-1) (tail lst) ((head lst):curcomb) accum)
+
+-- q27 group elements into disjoint subsets
+group :: (Eq a) => [Int] -> [a] -> [[[a]]]
+group ns lst =  if sum ns == length lst
+                then
+                    help (tail ns) (combinations (head ns) lst) lst [] []
+                else
+                    []
+-- help (set sizes) (current sets) list accum (total accum)
+        where   help [] s lst accum tot = []
+                help n [] lst accum tot = []
+                help (n:[]) (s:[]) lst accum tot = 
+                    (ziptogether accum (combinations n (rmv lst s)))++tot 
+                help n sets lst accum tot = 
+                    (help n (tail sets) lst accum ((ziptogether accum (combinations (head n) (rmv lst (head sets))))++tot)) ++ 
+                        (help (tail n) (combinations (head n) (rmv lst (head sets))) (rmv lst (head sets)) ((head sets):accum) tot) 
+                
+
+                rmv :: (Eq a) => [a] -> [a] -> [a]  
+                rmv lst1 lst2
+                    | null lst2 = lst1
+                    | otherwise = rmv (remainder lst1 (head lst2) []) (tail lst2)
+                remainder :: (Eq a) => [a] -> a -> [a] -> [a]    
+                remainder list a new
+                    | null list = new
+                    | head list == a = remainder (tail list) a new
+                    | otherwise = remainder (tail list) a ((head list):new)
+                
+ziptogether :: [a] -> [a] -> [[a]]
+ziptogether list add = [x:list | x <- add]
+        
+-- q28 sort list of lists by length of sublist
+lsort :: [[a]] -> [[a]]
+lsort list = sort $ zip (map length list) list
+    where   sort lst = []
+            
+            mfst = map fst    
+
+-- q31 determine whether a given number is prime
+isPrime :: Int -> Bool
+isPrime x
+    | x<2   = False
+    | x==2  = True
+    | otherwise = elem x (genPrimes x)
+
+genPrimes :: Int -> [Int]
+genPrimes 1 = [2]
+genPrimes x = if x<1
+            then []
+            else gp (x-1) [2] 3
+    where   gp 0 primes _ = primes
+            gp x primes next = if next `myelem` primes
+                                then gp x primes (next + 1)
+                                else gp (x-1) (next:primes) (next+1)
+            myelem x primes = 0 == (minimum (map (mod x) primes))
+            mymod x y = mod y x
+
