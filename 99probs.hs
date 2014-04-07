@@ -2,7 +2,7 @@
 -- http://www.haskell.org/haskellwiki/H-99:_Ninety-Nine_Haskell_Problems
 -- q2 Find all but 2nd last element in a list
 
-import System.Random
+--import System.Random
 
 myButLast :: [a]->a
 --myButLast a:b:xs
@@ -165,27 +165,27 @@ range a b | a<=b = [a..b]
           | otherwise = reverse $ range b a
 
 -- q23 extract a given number of random elements from a list
-rndSelect :: [a] -> Int -> IO [a]
-rndSelect a i = do
-    g <- newStdGen
-    return $ map (a!!) (take i (getRand a g))
-    where getRand a g = (randomRs (0,((length a)-1)) g)
+--rndSelect :: [a] -> Int -> IO [a]
+--rndSelect a i = do
+--    g <- newStdGen
+--    return $ map (a!!) (take i (getRand a g))
+--    where getRand a g = (randomRs (0,((length a)-1)) g)
 
 -- q24 draw n different lotto numbers from the set 1..m
-diffSelect :: Int -> Int -> IO [Int]
-diffSelect n m = rndSelect [1..m] n
+--diffSelect :: Int -> Int -> IO [Int]
+--diffSelect n m = rndSelect [1..m] n
 
 -- q25 create a random permutation of a list
-rndPermu :: [a] -> IO [a]
-rndPermu lst = do
-    g <- newStdGen
-    return $ perm' (lst,[]) (randoms g)
-    where   perm' ([],a) _ = a
-            perm' (x:[],a) _ = (x:a)
-            perm' (x,b) (r:rnd) = let tuple = rmn (r `mod` (length x)) x 
-                in perm' (fst tuple,(snd tuple):b) rnd
-rmn n xs = (ys ++ (tail zs),head zs)
-    where (ys,zs) = splitAt n xs          
+--rndPermu :: [a] -> IO [a]
+--rndPermu lst = do
+--    g <- newStdGen
+--    return $ perm' (lst,[]) (randoms g)
+--    where   perm' ([],a) _ = a
+--            perm' (x:[],a) _ = (x:a)
+--            perm' (x,b) (r:rnd) = let tuple = rmn (r `mod` (length x)) x 
+--                in perm' (fst tuple,(snd tuple):b) rnd
+--rmn n xs = (ys ++ (tail zs),head zs)
+--    where (ys,zs) = splitAt n xs          
                
 -- q26 generate all K combinations of a list (C(N,K))
 combinations :: Int -> [a] -> [[a]]
@@ -238,27 +238,39 @@ ziptogether list add = [x:list | x <- add]
         
 -- q28 sort list of lists by length of sublist
 lsort :: [[a]] -> [[a]]
-lsort list = sort $ zip (map length list) list
-    where   sort lst = []
-            
-            mfst = map fst    
+lsort list = map snd . sortfst $ zip (map length list) list
+sortfst :: (Ord a) => [(a,b)] -> [(a,b)]
+sortfst [] = []
+sortfst (x:xs) = 
+	let small = sortfst [a | a <-xs, fst a <= fst x]	            
+    	    big   = sortfst [a | a <-xs, fst a >  fst x]
+	in  small ++ x : big		    
+
+-- q28b sort list of lists by frequency of list of subsets
+-- PS terribly inefficient
+lfsort :: [[a]] -> [[a]]
+lfsort list = sorthelp (lsort list) []
+	where frequency (x:xs) = length [a|a<-xs, length a == length x]
+       	      sorthelp ([], a) = map snd $ sortfst a
+	      sorthelp (list@(x:xs), accum) = sorthelp (remaining, next)
+	          remaining = [a|a<-list, length a > length x]
+	          next = accum ++ zip length [a | a<-list, length a == length x]
 
 -- q31 determine whether a given number is prime
-isPrime :: Int -> Bool
-isPrime x
-    | x<2   = False
-    | x==2  = True
-    | otherwise = elem x (genPrimes x)
+--isPrime :: Int -> Bool
+--isPrime x
+--    | x<2   = False
+--    | x==2  = True
+--    | otherwise = elem x (genPrimes x)
 
-genPrimes :: Int -> [Int]
-genPrimes 1 = [2]
-genPrimes x = if x<1
-            then []
-            else gp (x-1) [2] 3
-    where   gp 0 primes _ = primes
-            gp x primes next = if next `myelem` primes
-                                then gp x primes (next + 1)
-                                else gp (x-1) (next:primes) (next+1)
-            myelem x primes = 0 == (minimum (map (mod x) primes))
-            mymod x y = mod y x
-
+--genPrimes :: Int -> [Int]
+--genPrimes 1 = [2]
+--genPrimes x = if x<1
+--            then []
+--            else gp (x-1) [2] 3
+--    where   gp 0 primes _ = primes
+--            gp x primes next = if next `myelem` primes
+--                                then gp x primes (next + 1)
+--                                else gp (x-1) (next:primes) (next+1)
+--            myelem x primes = 0 == (minimum (map (mod x) primes))
+--            mymod x y = mod y x
